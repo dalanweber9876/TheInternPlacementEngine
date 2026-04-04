@@ -1,0 +1,56 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Intern Placement Engine Home</title>
+    <link rel="stylesheet" href="{% static 'matcher/styles.css' %}" />
+  </head>
+  <body>
+    <h1>Welcome to the Intern Placement Engine!</h1>
+
+    <div class="step step1">
+      <h2 class="stepTitle">Step One: Upload the employer file here</h2>
+      <div class="stepBody">
+        <img
+          src="{% static 'matcher/images/curved_arrow.png' %}"
+          alt="Curved Arrow"
+          class="curved_arrow"
+        />
+        <form>
+          <button>Upload file</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="step step2">
+      <h2 class="stepTitle">Step Two: Upload the student file here</h2>
+      <div class="stepBody">
+        <form>
+          <button>Upload file</button>
+        </form>
+        <img
+          src="{% static 'matcher/images/curved_arrow.png' %}"
+          alt="Curved Arrow"
+          class="curved_arrow"
+        />
+      </div>
+    </div>
+
+    <div class="step step3">
+      <h2 class="stepTitle">
+        Step Three: Click this button and watch the magic happen
+      </h2>
+      <div class="stepBody">
+        <img
+          src="{% static 'matcher/images/curly_arrow.png' %}"
+          alt="Curly Arrow"
+          class="curly_arrow"
+        />
+        <button>Generate Report</button>
+      </div>
+    </div>
+  </body>
+</html>

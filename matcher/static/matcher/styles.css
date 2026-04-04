@@ -1,0 +1,81 @@
+@font-face {
+  font-family: "Chalk Board";
+  src: url("../matcher/fonts/Chalk3.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  background-image: url("./images/empty-blackboard.jpg");
+  background-size: auto;
+  background-position: center;
+  font-family: "Chalk Board", sans-serif;
+}
+
+h1,
+h2 {
+  color: white;
+}
+
+h1 {
+  display: flex;
+  justify-self: center;
+  font-size: 5vw;
+}
+
+h2 {
+  font-size: 2vw;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  row-gap: 20px;
+  margin: 50px;
+}
+
+.stepTitle {
+  grid-column: 1/4;
+  margin: auto;
+}
+
+.stepBody {
+  display: flex;
+  grid-column: 2/3;
+  margin: 20px auto auto auto;
+  align-items: center;
+}
+
+.step1 .stepBody img {
+  transform: rotate(-90deg);
+  margin-top: -25px;
+}
+
+.step2 .stepBody img {
+  margin-top: -25px;
+  transform: scaleX(-1) rotate(-90deg);
+}
+
+.step3 .stepBody img {
+  margin-top: -45px;
+  margin-right: 5px;
+  transform: rotate(90deg);
+}
+
+.step3 .stepTitle {
+  margin-bottom: 10px;
+}
+
+img {
+  filter: invert(1);
+  width: 5vw;
+}
+
+button {
+  color: white;
+  background-color: black;
+  padding: 10px;
+  border: none;
+  border-radius: 25px;
+  font-size: 1.5vw;
+}
