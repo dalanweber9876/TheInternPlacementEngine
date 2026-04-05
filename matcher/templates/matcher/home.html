@@ -19,23 +19,89 @@
           alt="Curved Arrow"
           class="curved_arrow"
         />
-        <form>
-          <button>Upload file</button>
+        <!-- <form
+          method="post"
+          enctype="multipart/form-data"
+          action="{% url 'upload_employer' %}"
+        >
+          {% csrf_token %}
+          
+          <input type="file" name="file" required />
+          <button type="submit">Upload</button>
+        </form> -->
+        <form
+          method="post"
+          enctype="multipart/form-data"
+          action="{% url 'upload_employer' %}"
+        >
+          {% csrf_token %}
+
+          <input
+            type="file"
+            name="file"
+            id="employerFileInput"
+            style="display: none"
+            onchange="this.form.submit()"
+          />
+
+          <button
+            type="button"
+            onclick="document.getElementById('employerFileInput').click()"
+            class="fileButton"
+          >
+            Upload file
+          </button>
         </form>
+        {%if employerFileName %}
+        <p class="fileName">Uploaded "{{employerFileName}}"</p>
+        {%endif%}
       </div>
     </div>
 
     <div class="step step2">
       <h2 class="stepTitle">Step Two: Upload the student file here</h2>
       <div class="stepBody">
-        <form>
-          <button>Upload file</button>
+        <!-- <form
+          method="post"
+          enctype="multipart/form-data"
+          action="{% url 'upload_student' %}"
+        >
+          {% csrf_token %}
+          
+          <input type="file" name="file" required />
+          <button type="submit">Upload</button>
+        </form> -->
+        <form
+          method="post"
+          enctype="multipart/form-data"
+          action="{% url 'upload_student' %}"
+        >
+          {% csrf_token %}
+
+          <input
+            type="file"
+            name="file"
+            id="studentFileInput"
+            style="display: none"
+            onchange="this.form.submit()"
+          />
+
+          <button
+            type="button"
+            onclick="document.getElementById('studentFileInput').click()"
+            class="fileButton"
+          >
+            Upload file
+          </button>
         </form>
         <img
           src="{% static 'matcher/images/curved_arrow.png' %}"
           alt="Curved Arrow"
           class="curved_arrow"
         />
+        {%if studentFileName %}
+        <p class="fileName">Uploaded "{{studentFileName}}"</p>
+        {%endif%}
       </div>
     </div>
 
@@ -52,5 +118,8 @@
         <button>Generate Report</button>
       </div>
     </div>
+    {%if error%}
+    <div class="errorMessage">{{error}}</div>
+    {%endif%}
   </body>
 </html>
