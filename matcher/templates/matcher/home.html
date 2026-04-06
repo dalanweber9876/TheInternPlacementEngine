@@ -19,16 +19,6 @@
           alt="Curved Arrow"
           class="curved_arrow"
         />
-        <!-- <form
-          method="post"
-          enctype="multipart/form-data"
-          action="{% url 'upload_employer' %}"
-        >
-          {% csrf_token %}
-          
-          <input type="file" name="file" required />
-          <button type="submit">Upload</button>
-        </form> -->
         <form
           method="post"
           enctype="multipart/form-data"
@@ -61,16 +51,6 @@
     <div class="step step2">
       <h2 class="stepTitle">Step Two: Upload the student file here</h2>
       <div class="stepBody">
-        <!-- <form
-          method="post"
-          enctype="multipart/form-data"
-          action="{% url 'upload_student' %}"
-        >
-          {% csrf_token %}
-          
-          <input type="file" name="file" required />
-          <button type="submit">Upload</button>
-        </form> -->
         <form
           method="post"
           enctype="multipart/form-data"
@@ -115,7 +95,9 @@
           alt="Curly Arrow"
           class="curly_arrow"
         />
-        <button>Generate Report</button>
+        <form method="get" action="{% url 'generate_report' %}">
+          <button type="submit">Generate Report</button>
+        </form>
       </div>
     </div>
     {%if error%}

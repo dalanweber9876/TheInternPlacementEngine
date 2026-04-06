@@ -13,7 +13,6 @@ def home(request):
 def upload_student_csv(request):
     if request.method == "POST":
         form = UploadCSVForm(request.POST, request.FILES)
-        print(form)
         if form.is_valid():
             file = request.FILES["file"]
 
@@ -22,7 +21,7 @@ def upload_student_csv(request):
                     "form": form,
                     "error": "The file must be a .csv file."
                 })
-            request.session["studentData"] = parseCsvFile(file)
+            request.session["studentData"] = parse_csv_file(file)
             request.session["studentFileName"] = file.name
             return redirect("home")
     return redirect("home")
@@ -39,14 +38,16 @@ def upload_employer_csv(request):
                     "form": form,
                     "error": "The file must be a .csv file."
                 })
-            request.session["employerData"] = parseCsvFile(file)
+            request.session["employerData"] = parse_csv_file(file)
             request.session["employerFileName"] = file.name
             return redirect("home")
     return redirect("home")
 
-def makeMatches(studentCsvFile, employerCsvFile):
-    students = parseCsvFile(studentCsvFile)
-    employers = parseCsvFile(employerCsvFile)
+
+def make_matches(students, employers):
+# def make_matches(studentCsvFile, employerCsvFile):
+    # students = parse_csv_file(studentCsvFile)
+    # employers = parse_csv_file(employerCsvFile)
 
     matches = {}
 
@@ -120,7 +121,7 @@ def makeMatches(studentCsvFile, employerCsvFile):
     
     return matches
 
-def parseCsvFile(file):
+def parse_csv_file(file):
     decoded = file.read().decode('utf-8').splitlines()
     reader = csv.reader(decoded)
     next(reader)
@@ -131,5 +132,17 @@ def parseCsvFile(file):
 
     return parsedData
 
-def runAlgorithm():
-    return False
+def generate_report(request):
+    employer_file = request.session.get("employerData")
+    student_file = request.session.get("studentData")
+
+    if not employer_file or not student_file:
+        return render(request, "matcher/home.html", {
+            "error": "Please upload both files first."
+        })
+    
+    matches = make_matches(student_file, employer_file)
+
+    return render(request, "matcher/report.html", {
+        "matches": matches
+    })

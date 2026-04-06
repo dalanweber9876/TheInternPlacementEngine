@@ -1,0 +1,18 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report</title>
+    <link rel="stylesheet" href="{% static 'matcher/styles.css' %}" />
+  </head>
+  <body>
+    <h1>The Report</h1>
+    <div>
+      {% for student, companies in matches.items %}
+      <p class="reportData">{{ student }} → {{ companies|join:", " }}</p>
+      {% endfor %}
+    </div>
+  </body>
+</html>

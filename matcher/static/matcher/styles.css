@@ -93,3 +93,12 @@ button:hover {
   margin-left: 20px;
   font-size: 1.5vw;
 }
+
+/*******************************
+ Report Page
+*******************************/
+.reportData {
+  color: white;
+  font-size: 20px;
+  margin-left: 20px;
+}
