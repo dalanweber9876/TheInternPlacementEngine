@@ -81,7 +81,7 @@ button {
 }
 
 .errorMessage {
-  color: red;
+  color: #7a2e2e;
   font-weight: bold;
   font-size: 25px;
   margin-left: 10px;
@@ -110,4 +110,38 @@ button:hover {
   color: white;
   font-size: 20px;
   margin-left: 20px;
+}
+
+.reportBody {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+}
+
+.reportBody h1 {
+  grid-column: 1/3;
+  margin-top: 0px;
+}
+
+.matches {
+  grid-column: 1/2;
+}
+
+.matches h2,
+.potentialMatches h2 {
+  font-size: 40px;
+  display: flex;
+  justify-self: center;
+}
+
+a {
+  font-size: 25px;
+  color: white;
+  position: absolute;
+  top: 10px;
+  left: 5px;
+}
+
+a:visited {
+  color: white;
 }

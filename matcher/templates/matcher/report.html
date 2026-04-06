@@ -7,12 +7,20 @@
     <title>Report</title>
     <link rel="stylesheet" href="{% static 'matcher/styles.css' %}" />
   </head>
-  <body>
+  <body class="reportBody">
+    <a href="/">Return Home</a>
     <h1>The Report</h1>
-    <div>
-      {% for student, companies in matches.items %}
-      <p class="reportData">{{ student }} → {{ companies|join:", " }}</p>
-      {% endfor %}
+    <div class="matches">
+      <h2>Matches</h2>
+      <div>
+        {% for student, companies in matches.items %}
+        <p class="reportData">{{ student }} → {{ companies|join:", " }}</p>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="potentialMatches">
+      <h2>Potential Matches</h2>
+      <div></div>
     </div>
   </body>
 </html>
