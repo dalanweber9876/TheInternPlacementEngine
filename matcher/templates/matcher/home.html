@@ -44,6 +44,9 @@
         </form>
         {%if employerFileName %}
         <p class="fileName">Uploaded "{{employerFileName}}"</p>
+        <form method="get" action="{% url 'clear_employer_file' %}">
+          <button class="clearButton" type="submit">X</button>
+        </form>
         {%endif%}
       </div>
     </div>
@@ -81,6 +84,9 @@
         />
         {%if studentFileName %}
         <p class="fileName">Uploaded "{{studentFileName}}"</p>
+        <form method="get" action="{% url 'clear_student_file' %}">
+          <button class="clearButton" type="submit">X</button>
+        </form>
         {%endif%}
       </div>
     </div>
@@ -98,10 +104,10 @@
         <form method="get" action="{% url 'generate_report' %}">
           <button type="submit">Generate Report</button>
         </form>
+        {%if error%}
+        <p class="errorMessage">{{error}}</p>
+        {%endif%}
       </div>
     </div>
-    {%if error%}
-    <div class="errorMessage">{{error}}</div>
-    {%endif%}
   </body>
 </html>

@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 from .forms import UploadCSVForm
 from django.shortcuts import redirect
 import csv
@@ -19,7 +18,9 @@ def upload_student_csv(request):
             if not file.name.endswith(".csv"):
                 return render(request, 'matcher/home.html', {
                     "form": form,
-                    "error": "The file must be a .csv file."
+                    "error": "The file must be a .csv file.",
+                    "studentFileName": request.session.get("studentFileName", ""),
+                    "employerFileName": request.session.get("employerFileName", "")
                 })
             request.session["studentData"] = parse_csv_file(file)
             request.session["studentFileName"] = file.name
@@ -36,7 +37,9 @@ def upload_employer_csv(request):
             if not file.name.endswith(".csv"):
                 return render(request, 'matcher/home.html', {
                     "form": form,
-                    "error": "The file must be a .csv file."
+                    "error": "The files must be .csv files.",
+                    "studentFileName": request.session.get("studentFileName", ""),
+                    "employerFileName": request.session.get("employerFileName", "")
                 })
             request.session["employerData"] = parse_csv_file(file)
             request.session["employerFileName"] = file.name
@@ -138,7 +141,9 @@ def generate_report(request):
 
     if not employer_file or not student_file:
         return render(request, "matcher/home.html", {
-            "error": "Please upload both files first."
+            "error": "Please upload both files.",
+            "studentFileName": request.session.get("studentFileName", ""),
+            "employerFileName": request.session.get("employerFileName", "")
         })
     
     matches = make_matches(student_file, employer_file)
@@ -146,3 +151,13 @@ def generate_report(request):
     return render(request, "matcher/report.html", {
         "matches": matches
     })
+
+def clear_student_file(request):
+    del request.session["studentFileName"]
+    del request.session["studentData"]
+    return redirect("home")
+
+def clear_employer_file(request):
+    del request.session["employerFileName"]
+    del request.session["employerData"]
+    return redirect("home")
