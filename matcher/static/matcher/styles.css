@@ -114,17 +114,22 @@ button:hover {
 
 .reportBody {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 40px 1fr;
   position: relative;
 }
 
 .reportBody h1 {
-  grid-column: 1/3;
+  grid-column: 1/4;
   margin-top: 0px;
 }
 
 .matches {
   grid-column: 1/2;
+}
+
+.potentialMatches {
+  grid-column: 3/4;
+  margin: 20px 0px;
 }
 
 .matches h2,
@@ -144,4 +149,33 @@ a {
 
 a:visited {
   color: white;
+}
+
+h3 {
+  color: white;
+  font-size: 25px;
+}
+
+.no_matches_body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.no_matches_students {
+  grid-column: 1/2;
+}
+
+.no_matches_companies {
+  grid-column: 2/3;
+}
+
+.potential_matches_desc {
+  color: white;
+  margin-top: -15px;
+  margin-bottom: 25px;
+  font-size: 18px;
+}
+
+.potential_matches_list {
+  margin-bottom: 100px;
 }

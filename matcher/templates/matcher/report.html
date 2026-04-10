@@ -13,14 +13,48 @@
     <div class="matches">
       <h2>Matches</h2>
       <div>
-        {% for student, companies in matches.items %}
-        <p class="reportData">{{ student }} → {{ companies|join:", " }}</p>
+        {% for company, students in matches.items %}
+        <p class="reportData">{{ company }} → {{ students|join:", " }}</p>
         {% endfor %}
       </div>
     </div>
     <div class="potentialMatches">
       <h2>Potential Matches</h2>
-      <div></div>
+      <p class="potential_matches_desc">
+        This is a list of possible matches where the employer had open spot(s)
+        that were not initially filled and they listed a student in their
+        rankings that did not get matched with a company. This ignores the
+        student's top ten list since it did not get them a match, and gives them
+        an opportunity to go with a company that wants them.
+      </p>
+      <div class="potential_matches_list">
+        {% for company, data in potential_matches.items %}
+        <p class="reportData">
+          {{ company }} has {{data.open_spots}} open spot(s) <br />
+          Possible Students: <br />
+          {{data.students|join:", "}}
+        </p>
+        {% endfor %}
+      </div>
+      <div class="no_matches_body">
+        <div class="no_matches_students">
+          <h3>Matchless Students</h3>
+          <ul>
+            {% for student in unmatched_students %}
+            <li class="reportData">{{ student }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="no_matches_companies">
+          <h3>Unmatched Companies</h3>
+          <ul>
+            {% for company in unmatched_companies %}
+            <li class="reportData">{{ company }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
     </div>
   </body>
 </html>

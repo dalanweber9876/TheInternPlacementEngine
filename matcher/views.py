@@ -48,17 +48,16 @@ def upload_employer_csv(request):
 
 
 def make_matches(students, employers):
-# def make_matches(studentCsvFile, employerCsvFile):
-    # students = parse_csv_file(studentCsvFile)
-    # employers = parse_csv_file(employerCsvFile)
 
     matches = {}
 
+    matchedStudents = []
     unmatchedStudents = []
     tryAgainStudents = []
 
     # Make an initial placement for all students a single time.
     for student in students:
+        matchedStudents.append(student)
         for employer in students[student]:
             if employer not in matches:
                 matches[employer] = []
@@ -119,10 +118,60 @@ def make_matches(students, employers):
         
         # If the try again student wasn't placed by this point, then there is no match for them.
         if currStudent in tryAgainStudents:
-            unmatchedStudents.append(currStudent)
+            matchedStudents.remove(currStudent)
             tryAgainStudents.pop(tryAgainStudents.index(currStudent))
+
+    all_students = set(students.keys())
+    matched_students = set()
+
+    for employer in matches:
+        for student in matches[employer]:
+            matched_students.add(student)
+
+    unmatchedStudents = list(all_students - matched_students)
+
+    matches = {
+    employer: students
+    for employer, students in matches.items()
+    if students
+}
+
+    return matches, unmatchedStudents
+
+def make_potential_matches(matches, employer_dict, unmatched_students):
+    potential_matches = {}
+    unmatched_set = set(unmatched_students)
+    unmatched_companies = []
+
+    for employer in employer_dict:
+        capacity = int(employer_dict[employer][0])
+        current_matches = matches.get(employer, [])
+
+        if capacity > len(current_matches):
+            valid_students = [
+                student for student in employer_dict[employer][1:]
+                if student in unmatched_set
+            ]
+
+            if valid_students:
+                potential_matches[employer] = valid_students
+        if not matches.get(employer):
+            unmatched_companies.append(employer)
+
+    for students in potential_matches.values():
+        for student in students:
+            unmatched_set.discard(student)
+
+    for company in potential_matches:
+        capacity = int(employer_dict[company][0])
+        current = len(matches.get(company, []))
+        potential_matches[company] = {
+            "students": potential_matches[company],
+            "open_spots": capacity - current
+        }
     
-    return matches
+
+    return potential_matches, unmatched_set, unmatched_companies
 
 def parse_csv_file(file):
     decoded = file.read().decode('utf-8').splitlines()
@@ -146,10 +195,16 @@ def generate_report(request):
             "employerFileName": request.session.get("employerFileName", "")
         })
     
-    matches = make_matches(student_file, employer_file)
+    matches, unmatched_students = make_matches(student_file, employer_file)
+
+    potential_matches, unmatched_students_potential, unmatched_companies = make_potential_matches(matches, employer_file, unmatched_students)
 
     return render(request, "matcher/report.html", {
-        "matches": matches
+        "matches": matches,
+        "potential_matches": potential_matches,
+        "unmatched_students": unmatched_students_potential,
+        "unmatched_companies": unmatched_companies,
+        "employers": employer_file
     })
 
 def clear_student_file(request):
