@@ -8,4 +8,5 @@ urlpatterns = [
     path('report/', views.generate_report, name='generate_report'),
     path('clear_employer_file/', views.clear_employer_file, name='clear_employer_file'),
     path('clear_student_file/', views.clear_student_file, name='clear_student_file'),
+    path("download-report/", views.download_report, name="download_report"),
 ]

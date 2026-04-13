@@ -1,6 +1,11 @@
 from django.shortcuts import render
 from .forms import UploadCSVForm
 from django.shortcuts import redirect
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from django.utils import timezone
 import csv
 
 def home(request):
@@ -158,10 +163,6 @@ def make_potential_matches(matches, employer_dict, unmatched_students):
         if not matches.get(employer):
             unmatched_companies.append(employer)
 
-    for students in potential_matches.values():
-        for student in students:
-            unmatched_set.discard(student)
-
     for company in potential_matches:
         capacity = int(employer_dict[company][0])
         current = len(matches.get(company, []))
@@ -199,8 +200,16 @@ def generate_report(request):
 
     potential_matches, unmatched_students_potential, unmatched_companies = make_potential_matches(matches, employer_file, unmatched_students)
 
+    matches_data = {}
+    for company in matches:
+        capacity = int(employer_file[company][0])
+        matches_data[company] = {
+            "students": matches[company],
+            "capacity": capacity
+        }
+
     return render(request, "matcher/report.html", {
-        "matches": matches,
+        "matches": matches_data,
         "potential_matches": potential_matches,
         "unmatched_students": unmatched_students_potential,
         "unmatched_companies": unmatched_companies,
@@ -216,3 +225,77 @@ def clear_employer_file(request):
     del request.session["employerFileName"]
     del request.session["employerData"]
     return redirect("home")
+
+def download_report(request):
+    employer_file = request.session.get("employerData")
+    student_file = request.session.get("studentData")
+
+    if not employer_file or not student_file:
+        return HttpResponse("Missing data", status=400)
+
+    matches, unmatched_students = make_matches(student_file, employer_file)
+    potential_matches, unmatched_students, unmatched_companies = make_potential_matches(
+        matches, employer_file, unmatched_students
+    )
+
+    today = timezone.now().strftime("%m.%d.%y")
+    filename = f"report_{today}.pdf"
+
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    doc = SimpleDocTemplate(response, pagesize=letter)
+    styles = getSampleStyleSheet()
+
+    elements = []
+
+    # Title
+    elements.append(Paragraph("The Report", styles["Title"]))
+    elements.append(Spacer(1, 20))
+
+    # Matches
+    elements.append(Paragraph("Matches", styles["Heading2"]))
+    elements.append(Spacer(1, 10))
+
+    for company, students in matches.items():
+        line = f"{company} → {', '.join(students)}"
+        elements.append(Paragraph(line, styles["Normal"]))
+        elements.append(Spacer(1, 8))
+
+    # Potential Matches
+    elements.append(Spacer(1, 20))
+    elements.append(Paragraph("Potential Matches", styles["Heading2"]))
+    elements.append(Spacer(1, 10))
+    elements.append(Paragraph("This is a list of possible matches where the employer had open spot(s) that were not initially filled and they listed a student in their rankings that did not get matched with a company. This ignores the student's top ten list since it did not get them a match, and gives them an opportunity to go with a company that wants them."))
+    elements.append(Spacer(1, 10))
+
+    for company, data in potential_matches.items():
+        elements.append(Paragraph(
+            f"{company} has {data['open_spots']} open spot(s)",
+            styles["Normal"]
+        ))
+        elements.append(Paragraph(
+            f"Possible Students: {', '.join(data['students'])}",
+            styles["Normal"]
+        ))
+        elements.append(Spacer(1, 12))
+
+    # Matchless Students
+    elements.append(Spacer(1, 20))
+    elements.append(Paragraph("Matchless Students", styles["Heading3"]))
+    elements.append(Spacer(1, 10))
+
+    for student in unmatched_students:
+        elements.append(Paragraph(student, styles["Normal"]))
+
+    # Unmatched Companies
+    elements.append(Spacer(1, 20))
+    elements.append(Paragraph("Unmatched Companies", styles["Heading3"]))
+    elements.append(Spacer(1, 10))
+
+    for company in unmatched_companies:
+        elements.append(Paragraph(company, styles["Normal"]))
+
+    doc.build(elements)
+
+    return response
