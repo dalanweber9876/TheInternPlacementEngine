@@ -226,6 +226,13 @@ def clear_employer_file(request):
     del request.session["employerData"]
     return redirect("home")
 
+from django.http import HttpResponse
+from django.utils import timezone
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import letter
+
+
 def download_report(request):
     employer_file = request.session.get("employerData")
     student_file = request.session.get("studentData")
@@ -234,17 +241,32 @@ def download_report(request):
         return HttpResponse("Missing data", status=400)
 
     matches, unmatched_students = make_matches(student_file, employer_file)
+
     potential_matches, unmatched_students, unmatched_companies = make_potential_matches(
         matches, employer_file, unmatched_students
     )
 
+    # ✅ Build matches in same structure as template
+    structured_matches = {}
+    for company, students in matches.items():
+        capacity = int(employer_file[company][0])
+        structured_matches[company] = {
+            "students": students,
+            "capacity": capacity
+        }
+
+    # ✅ Filename with date
     today = timezone.now().strftime("%m.%d.%y")
     filename = f"report_{today}.pdf"
 
     response = HttpResponse(content_type="application/pdf")
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
-    doc = SimpleDocTemplate(response, pagesize=letter)
+    doc = SimpleDocTemplate(
+    response,
+    pagesize=letter,
+    title="Downloaded Report"
+)
     styles = getSampleStyleSheet()
 
     elements = []
@@ -257,8 +279,8 @@ def download_report(request):
     elements.append(Paragraph("Matches", styles["Heading2"]))
     elements.append(Spacer(1, 10))
 
-    for company, students in matches.items():
-        line = f"{company} → {', '.join(students)}"
+    for company, data in structured_matches.items():
+        line = f"{company} → {', '.join(data['students'])}"
         elements.append(Paragraph(line, styles["Normal"]))
         elements.append(Spacer(1, 8))
 
@@ -266,7 +288,15 @@ def download_report(request):
     elements.append(Spacer(1, 20))
     elements.append(Paragraph("Potential Matches", styles["Heading2"]))
     elements.append(Spacer(1, 10))
-    elements.append(Paragraph("This is a list of possible matches where the employer had open spot(s) that were not initially filled and they listed a student in their rankings that did not get matched with a company. This ignores the student's top ten list since it did not get them a match, and gives them an opportunity to go with a company that wants them."))
+
+    elements.append(Paragraph(
+        "This is a list of possible matches where the employer had open spot(s) "
+        "that were not initially filled and they listed a student in their rankings "
+        "that did not get matched with a company. This ignores the student's top ten "
+        "list since it did not get them a match, and gives them an opportunity to go "
+        "with a company that wants them.",
+        styles["Normal"]
+    ))
     elements.append(Spacer(1, 10))
 
     for company, data in potential_matches.items():
@@ -280,9 +310,9 @@ def download_report(request):
         ))
         elements.append(Spacer(1, 12))
 
-    # Matchless Students
+    # Unmatched Students
     elements.append(Spacer(1, 20))
-    elements.append(Paragraph("Matchless Students", styles["Heading3"]))
+    elements.append(Paragraph("Unmatched Students", styles["Heading3"]))
     elements.append(Spacer(1, 10))
 
     for student in unmatched_students:

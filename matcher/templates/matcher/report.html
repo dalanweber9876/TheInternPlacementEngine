@@ -14,9 +14,7 @@
       <h2>Matches</h2>
       <div>
         {% for company, data in matches.items %}
-        <p class="reportData">
-          {{ company }} ({{data.capacity}}) → {{ data.students|join:", " }}
-        </p>
+        <p class="reportData">{{ company }} → {{data.students|join:", " }}</p>
         {% endfor %}
       </div>
     </div>
