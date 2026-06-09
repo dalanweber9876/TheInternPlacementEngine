@@ -67,6 +67,11 @@ def make_matches(students, employers):
             if employer not in matches:
                 matches[employer] = []
 
+############################# Potential fix #####################################
+            if employer not in employers:
+                employers[employer] = [0, '', '', '', '', '', '', '', '', '', '']
+############################## End of fix #######################################
+
             # See if the student is on the employer’s list.
             if student in employers[employer]:
                 
