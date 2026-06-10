@@ -66,14 +66,14 @@ def make_matches(students, employers):
         for employer in students[student]:
             if employer not in employers:
                 employers[employer] = [0, '', '', '', '', '', '', '', '', '', '']
+            if employer not in matches:
+                matches[employer] = []
 
 
     # Make an initial placement for all students a single time.
     for student in students:
         matchedStudents.append(student)
         for employer in students[student]:
-            if employer not in matches:
-                matches[employer] = []
 
             # See if the student is on the employer’s list.
             if student in employers[employer]:
