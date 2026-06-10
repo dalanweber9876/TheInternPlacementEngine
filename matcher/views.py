@@ -60,17 +60,20 @@ def make_matches(students, employers):
     unmatchedStudents = []
     tryAgainStudents = []
 
+    # Fix key errors which are caused by students listing an employer that aren't in the employer list.
+    # It adds them to the employer list with empty values.
+    for student in students:
+        for employer in students[student]:
+            if employer not in employers:
+                employers[employer] = [0, '', '', '', '', '', '', '', '', '', '']
+
+
     # Make an initial placement for all students a single time.
     for student in students:
         matchedStudents.append(student)
         for employer in students[student]:
             if employer not in matches:
                 matches[employer] = []
-
-############################# Potential fix #####################################
-            if employer not in employers:
-                employers[employer] = [0, '', '', '', '', '', '', '', '', '', '']
-############################## End of fix #######################################
 
             # See if the student is on the employer’s list.
             if student in employers[employer]:
